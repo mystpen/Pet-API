@@ -25,6 +25,7 @@ func NewController(service userService) *Controller{
 
 func (c *Controller) Routes(r *gin.Engine, cfg *config.Config){
 	r.POST("signup", c.Signup)
+	r.POST("signin", c.Signin)
 }
 
 func (c *Controller) Signup(ctx *gin.Context){
@@ -51,4 +52,8 @@ func (c *Controller) Signup(ctx *gin.Context){
 		}
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "User successful registered"})
+}
+
+func (c *Controller) Signin(ctx *gin.Context){
+
 }
