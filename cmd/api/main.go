@@ -8,6 +8,7 @@ import (
 
 	"github.com/mystpen/Pet-API/config"
 	"github.com/mystpen/Pet-API/internal/controller"
+	"github.com/mystpen/Pet-API/internal/redis"
 	"github.com/mystpen/Pet-API/internal/repository"
 	"github.com/mystpen/Pet-API/internal/repository/user"
 	"github.com/mystpen/Pet-API/internal/service"
@@ -25,6 +26,12 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	_, err = redis.NewRedisClient(cfg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	server := gin.Default()
 
