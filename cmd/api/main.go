@@ -27,7 +27,7 @@ func main() {
 	}
 	defer db.Close()
 
-	_, err = redis.NewRedisClient(cfg)
+	redisClient, err := redis.NewRedisClient(cfg)
 	if err != nil {
 		log.Println(err)
 		return
@@ -43,7 +43,7 @@ func main() {
 
 	repo := user.NewUserRepository(db)
 	service := service.NewUserService(repo)
-	controller := controller.NewController(service)
+	controller := controller.NewController(service, redisClient)
 
 	controller.Routes(server, cfg)
 

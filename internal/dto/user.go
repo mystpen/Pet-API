@@ -5,3 +5,8 @@ type RegistrationRequest struct {
 	Email    string  `json:"email" binding:"required,email"`
 	Password *string `json:"password" binding:"required" validate:"min=8"`
 }
+
+type LogInRequest struct{
+	Email    string  `json:"email" binding:"required,email"`
+	Password *string `json:"password" binding:"required" validate:"min=8"`
+}

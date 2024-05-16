@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
 	"time"
 
 	"github.com/mystpen/Pet-API/internal/dto"
+	"github.com/mystpen/Pet-API/internal/model"
 	"github.com/mystpen/Pet-API/pkg"
 )
 
@@ -36,4 +38,15 @@ func (us *UserService) RegisterUser(request *dto.RegistrationRequest) error {
 		return err
 	}
 	return nil
+}
+
+func (us *UserService) GetRegisteredUser(*dto.LogInRequest) (*model.User, error) { //TODO 
+	var user model.User
+
+	return &user, nil
+}
+
+func (us *UserService) CreateToken(user *model.User) string {
+	auth := user.UserName + ":" + user.PlainPassword
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
