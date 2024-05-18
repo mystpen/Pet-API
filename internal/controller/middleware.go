@@ -28,7 +28,6 @@ func (c *Controller) BasicAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		if isAuth == "" {
-			ctx.Writer.Header().Add("Authorization", "")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}

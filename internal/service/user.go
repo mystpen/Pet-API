@@ -8,10 +8,12 @@ import (
 	"github.com/mystpen/Pet-API/internal/dto"
 	"github.com/mystpen/Pet-API/internal/model"
 	"github.com/mystpen/Pet-API/pkg"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserStorage interface {
 	CreatUser(context.Context, *dto.RegistrationRequest, []byte) error
+	GetUserByEmail(context.Context, string) (*model.User, error)
 }
 
 type UserService struct {
@@ -40,10 +42,20 @@ func (us *UserService) RegisterUser(request *dto.RegistrationRequest) error {
 	return nil
 }
 
-func (us *UserService) GetRegisteredUser(*dto.LogInRequest) (*model.User, error) { //TODO 
-	var user model.User
+func (us *UserService) GetRegisteredUser(req *dto.LogInRequest) (*model.User, error) { //TODO 
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-	return &user, nil
+	user, err := us.userStorage.GetUserByEmail(ctx, req.Email)
+	if err != nil{
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword(user.Password, []byte(*req.Password))
+	if err != nil{
+		return nil, model.ErrNoMatch
+	}
+	return user, nil
 }
 
 func (us *UserService) CreateToken(user *model.User) string {

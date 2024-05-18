@@ -34,6 +34,7 @@ func NewController(service userService, redisClient *redis.Client) *Controller {
 func (c *Controller) Routes(r *gin.Engine, cfg *config.Config) {
 	r.POST("signup", c.Signup)
 	r.POST("signin", c.Signin)
+	r.GET("test", c.BasicAuthMiddleware(), c.TestHandler)
 }
 
 func (c *Controller) Signup(ctx *gin.Context) {
@@ -80,7 +81,7 @@ func (c *Controller) Signin(ctx *gin.Context) {
 	user, err := c.service.GetRegisteredUser(&request)
 	if err != nil {
 		switch {
-		case errors.Is(err, model.ErrRecordNotFound):
+		case errors.Is(err, model.ErrRecordNotFound), errors.Is(err, model.ErrNoMatch):
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "incorrect email or password"})
 			return
 		default:
@@ -95,6 +96,10 @@ func (c *Controller) Signin(ctx *gin.Context) {
 	// set redis with time limit
 	c.redis.Set(token, 1, time.Hour)
 
-	// header add
-	ctx.Writer.Header().Add("Authorization", "Basic "+token)
+	ctx.JSON(http.StatusOK, gin.H{"message": "User successful logged in"})
 }
+
+func (c *Controller) TestHandler(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"message": "Test auth"})
+}
+

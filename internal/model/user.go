@@ -9,6 +9,7 @@ import (
 var (
 	ErrDuplicateEmail = errors.New("duplicate email")
 	ErrRecordNotFound = errors.New("record not found")
+	ErrNoMatch        = errors.New("no match data")
 )
 
 type User struct {
