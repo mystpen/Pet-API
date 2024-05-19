@@ -47,7 +47,7 @@ func (ur *UserRepository) CreatUser(ctx context.Context, request *dto.Registrati
 
 func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
 	query := `
-	SELECT id, name, email, password_hash
+	SELECT id, username, email, password_hash
 	FROM users
 	WHERE email = $1`
 

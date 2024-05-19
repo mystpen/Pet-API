@@ -55,6 +55,7 @@ func (us *UserService) GetRegisteredUser(req *dto.LogInRequest) (*model.User, er
 	if err != nil{
 		return nil, model.ErrNoMatch
 	}
+	user.PlainPassword = *req.Password
 	return user, nil
 }
 

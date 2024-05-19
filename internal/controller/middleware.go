@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/base64"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,14 +16,10 @@ func (c *Controller) BasicAuthMiddleware() gin.HandlerFunc {
 		}
 
 		authToken := authHeader[6:]
-		decodedToken, err := base64.StdEncoding.DecodeString(authToken)
+
+		isAuth, err := c.redis.Get(authToken).Result()
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-			return
-		}
-		isAuth, err := c.redis.Get(string(decodedToken)).Result()
-		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, err.Error())
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
 		if isAuth == "" {

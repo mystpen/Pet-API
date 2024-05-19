@@ -94,7 +94,7 @@ func (c *Controller) Signin(ctx *gin.Context) {
 	token := c.service.CreateToken(user)
 
 	// set redis with time limit
-	c.redis.Set(token, 1, time.Hour)
+	c.redis.Set(token, 1, time.Minute)
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User successful logged in"})
 }
@@ -102,4 +102,3 @@ func (c *Controller) Signin(ctx *gin.Context) {
 func (c *Controller) TestHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Test auth"})
 }
-
