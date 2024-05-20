@@ -8,6 +8,7 @@ import (
 
 	"github.com/mystpen/Pet-API/config"
 	"github.com/mystpen/Pet-API/internal/controller"
+	"github.com/mystpen/Pet-API/internal/redis"
 	"github.com/mystpen/Pet-API/internal/repository"
 	"github.com/mystpen/Pet-API/internal/repository/user"
 	"github.com/mystpen/Pet-API/internal/service"
@@ -26,6 +27,12 @@ func main() {
 	}
 	defer db.Close()
 
+	redisClient, err := redis.NewRedisClient(cfg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	server := gin.Default()
 
 	err = repository.Init(db)
@@ -36,7 +43,7 @@ func main() {
 
 	repo := user.NewUserRepository(db)
 	service := service.NewUserService(repo)
-	controller := controller.NewController(service)
+	controller := controller.NewController(service, redisClient)
 
 	controller.Routes(server, cfg)
 

@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -42,4 +43,30 @@ func (ur *UserRepository) CreatUser(ctx context.Context, request *dto.Registrati
 	}
 
 	return nil
+}
+
+func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
+	query := `
+	SELECT id, username, email, password_hash
+	FROM users
+	WHERE email = $1`
+
+	var user model.User
+
+	err := ur.db.QueryRowContext(ctx, query, email).Scan(
+		&user.ID,
+		&user.UserName,
+		&user.Email,
+		&user.Password,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, model.ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
 }
