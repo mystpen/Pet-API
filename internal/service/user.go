@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//go:generate mockgen -source=user.go -destination=mock/mock.go
+
 type UserStorage interface {
 	CreatUser(context.Context, *dto.RegistrationRequest, []byte) error
 	GetUserByEmail(context.Context, string) (*model.User, error)
