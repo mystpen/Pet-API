@@ -12,6 +12,7 @@ import (
 	"github.com/mystpen/Pet-API/internal/repository"
 	"github.com/mystpen/Pet-API/internal/repository/user"
 	"github.com/mystpen/Pet-API/internal/service"
+	"github.com/mystpen/Pet-API/pkg"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	}
 
 	// Connect to DB
-	db, err := openDB(*cfg)
+	db, err := pkg.OpenDB(*cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

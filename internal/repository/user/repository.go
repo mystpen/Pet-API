@@ -23,7 +23,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 func (ur *UserRepository) CreatUser(ctx context.Context, request *dto.RegistrationRequest, hashPassword []byte) error {
 	query := `INSERT INTO users (id, username, email, password_hash)
 	VALUES ($1, $2, $3, $4)
-	RETURNING id`
+	RETURNING id;`
 
 	user := model.User{
 		ID:       uuid.New(),
@@ -49,7 +49,7 @@ func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mo
 	query := `
 	SELECT id, username, email, password_hash
 	FROM users
-	WHERE email = $1`
+	WHERE email = $1;`
 
 	var user model.User
 

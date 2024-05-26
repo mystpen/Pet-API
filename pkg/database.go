@@ -1,4 +1,4 @@
-package main
+package pkg
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func openDB(cfg config.Config) (*sql.DB, error) {
+func OpenDB(cfg config.Config) (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		cfg.Host, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
