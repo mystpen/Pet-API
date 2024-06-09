@@ -10,8 +10,10 @@ import (
 	"github.com/mystpen/Pet-API/internal/controller"
 	"github.com/mystpen/Pet-API/internal/redis"
 	"github.com/mystpen/Pet-API/internal/repository"
+	docrepo "github.com/mystpen/Pet-API/internal/repository/document"
 	"github.com/mystpen/Pet-API/internal/repository/user"
 	"github.com/mystpen/Pet-API/internal/service"
+	docservice "github.com/mystpen/Pet-API/internal/service/document"
 	"github.com/mystpen/Pet-API/pkg"
 )
 
@@ -42,9 +44,12 @@ func main() {
 		return
 	}
 
-	repo := user.NewUserRepository(db)
-	service := service.NewUserService(repo)
-	controller := controller.NewController(service, redisClient)
+	userRepo := user.NewUserRepository(db)
+	docRepo := docrepo.NewDocumentRepository(db)
+	userService := service.NewUserService(userRepo)
+	docService := docservice.NewDocumentService(docRepo)
+
+	controller := controller.NewController(userService, docService, redisClient)
 
 	controller.Routes(server, cfg)
 

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"github.com/mystpen/Pet-API/config"
 	"github.com/mystpen/Pet-API/internal/dto"
 	"github.com/mystpen/Pet-API/internal/model"
 	"github.com/mystpen/Pet-API/internal/validator"
@@ -19,22 +18,21 @@ type userService interface {
 	CreateToken(*model.User) string
 }
 
+type docService interface {
+}
+
 type Controller struct {
-	service userService
-	redis   *redis.Client
+	userService userService
+	docService  docService
+	redis       *redis.Client
 }
 
-func NewController(service userService, redisClient *redis.Client) *Controller {
+func NewController(userservice userService, docervice docService, redisClient *redis.Client) *Controller {
 	return &Controller{
-		service: service,
-		redis:   redisClient,
+		userService: userservice,
+		docService:  docervice,
+		redis:       redisClient,
 	}
-}
-
-func (c *Controller) Routes(r *gin.Engine, cfg *config.Config) {
-	r.POST("signup", c.Signup)
-	r.POST("signin", c.Signin)
-	r.GET("test", c.BasicAuthMiddleware(), c.TestHandler)
 }
 
 func (c *Controller) Signup(ctx *gin.Context) {
@@ -50,7 +48,7 @@ func (c *Controller) Signup(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = c.service.RegisterUser(&request)
+	err = c.userService.RegisterUser(&request)
 	if err != nil {
 		if errors.Is(err, model.ErrDuplicateEmail) {
 			ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": "a user with this email address already exists"})
@@ -78,7 +76,7 @@ func (c *Controller) Signin(ctx *gin.Context) {
 		return
 	}
 
-	user, err := c.service.GetRegisteredUser(&request)
+	user, err := c.userService.GetRegisteredUser(&request)
 	if err != nil {
 		switch {
 		case errors.Is(err, model.ErrRecordNotFound), errors.Is(err, model.ErrNoMatch):
@@ -91,7 +89,7 @@ func (c *Controller) Signin(ctx *gin.Context) {
 	}
 
 	// create token session
-	token := c.service.CreateToken(user)
+	token := c.userService.CreateToken(user)
 
 	// set redis with time limit
 	c.redis.Set(token, 1, time.Minute)
