@@ -19,7 +19,7 @@ func Init(db *sql.DB) error {
 		id uuid PRIMARY KEY,
 		title text NOT NULL,
 		text text NOT NULL,
-		created_at timestamp(0) NOT NULL DEFAULT (now() at time zone 'utc')
+		created_at timestamp(0) NOT NULL DEFAULT (NOW() at time zone 'UTC'),
 		user_id uuid,
 		FOREIGN KEY (user_id) REFERENCES users (id)
 	 );`
