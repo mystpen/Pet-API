@@ -13,6 +13,15 @@ func Init(db *sql.DB) error {
 		username text NOT NULL,
 		email text UNIQUE NOT NULL,
 		password_hash bytea NOT NULL
+	 );
+	 
+	 CREATE TABLE IF NOT EXISTS documents (
+		id uuid PRIMARY KEY,
+		title text NOT NULL,
+		text text NOT NULL,
+		created_at timestamp(0) NOT NULL DEFAULT (now() at time zone 'utc')
+		user_id uuid,
+		FOREIGN KEY (user_id) REFERENCES users (id)
 	 );`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
